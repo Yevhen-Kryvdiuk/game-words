@@ -1,6 +1,5 @@
-const foundWord = require('./foundWord');
+const findWord = require('./findWord');
 const deleteWord = require('./deleteWord');
-const verificationWord = require('./verificationWord');
 const nouns = require('./words');
 const readline = require('readline');
 
@@ -12,21 +11,22 @@ let userWord = '';
 let computerWord = '';
 
 function questionGame(message) {
-    rl.question(`${message}\n`,(answer) => {
-        userWord = answer.toLowerCase();
+    rl.question(`${message}\n`, (answer) => {
+        userWord = answer.toLowerCase().trim();
         if (userWord === CLOSE_GAME) {
             rl.close();
         } else {
-            if (!verificationWord(userWord, nouns)) {
-                computerWord = warningMessage;
-                questionGame(computerWord);
-            } else {
+            if (nouns.includes(userWord)) {
                 deleteWord(userWord, nouns);
-                computerWord = foundWord(userWord, nouns);
-                questionGame(computerWord);
-                if (computerWord === 'You win!') {
+                computerWord = findWord(userWord, nouns);
+                deleteWord(computerWord, nouns);
+                if (!computerWord) {
+                    console.log('You win!');
                     rl.close();
                 }
+                questionGame(computerWord);
+            } else {
+                questionGame(warningMessage);
             }
         }
     });
